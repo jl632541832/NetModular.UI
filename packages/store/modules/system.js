@@ -1,5 +1,7 @@
 import _ from 'lodash'
 import token from '../../utils/token'
+import { router } from '../../router'
+
 export default {
   namespaced: true,
   state: {
@@ -37,12 +39,20 @@ export default {
     /**
      * @description 退出
      */
-    async logout({ dispatch }) {
+    logout({ commit }) {
       // 删除令牌
       token.remove()
 
-      // 账号退出
-      dispatch('app/account/logout', null, { root: true })
+      // 账户清除
+      commit('app/account/clear', null, { root: true })
+
+      // 跳转到登录页面
+      router.push({
+        name: 'login',
+        query: {
+          redirect: router.currentRoute.fullPath
+        }
+      })
     }
   },
   mutations: {

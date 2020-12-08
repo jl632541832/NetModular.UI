@@ -10,7 +10,7 @@ const resolveRouteMenus = (menu, rootId, bc) => {
       route: ''
     })
     menu.rootId = rootId
-    routeMenus.set(menu.routeName, { menu, breadcrumb: bc_ })
+    routeMenus.set(menu.routeName + '|' + (menu.routeParams || '{}'), { menu, breadcrumb: bc_ })
   } else if (menu.type === 0) {
     bc_.push({
       title: menu.name,
@@ -55,7 +55,7 @@ export default {
       let list = []
       if (state.routeMenus) {
         state.routeMenus.forEach((value, key) => {
-          list.push(key)
+          list.push(key.split('|')[0])
         })
       }
       return list
@@ -94,12 +94,6 @@ export default {
         dispatch('app/system/logout', null, { root: true })
       }
     },
-    /**
-     * @description 退出
-     */
-    logout({ commit }) {
-      commit('reset')
-    },
     cacheGet() {
       return db.get('accountId')
     },
@@ -108,6 +102,7 @@ export default {
     },
     /** 初始化路由菜单数组 */
     initRouteMenus({ commit }, account) {
+      routeMenus = new Map()
       account.menus.map(m => {
         resolveRouteMenus(m, m.id)
       })
@@ -130,7 +125,7 @@ export default {
     initRouteMenus(state, routeMenus) {
       state.routeMenus = routeMenus
     },
-    reset(state) {
+    clear(state) {
       state.id = ''
       state.name = ''
     }
